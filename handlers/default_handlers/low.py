@@ -5,6 +5,7 @@ from keyboards.reply.back_main import edit_currencies_button
 from utils.site_API.get_currencies_API import get_value_currency_api
 from utils.site_API.get_date import get_datetime_now_api
 from utils.database.get_currencies import get_user_currencies
+from utils.database.add_history import add_user_history
 from states.custom_states import GetCurseNow
 
 
@@ -14,6 +15,7 @@ def output_course_now(message: Message) -> None:
 	Вывод курса валют на текущий момент.
 	"""
 	bot.set_state(message.from_user.id, GetCurseNow.now, message.chat.id)
+	add_user_history(message.from_user.id, f'Вывод курса валют на текущий момент (/low).')
 
 	bot_message = f'💰 Текущий курс валют на {get_datetime_now_api()}\n\n'
 

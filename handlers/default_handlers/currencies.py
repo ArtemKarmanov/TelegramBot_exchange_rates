@@ -5,10 +5,11 @@ from loader import bot
 from telebot.types import Message, CallbackQuery
 
 from states.custom_states import ChangeUserCurrencies
-from utils.database.get_currencies import get_user_currencies
 from keyboards.inline.change_currencies import get_change_currencies_buttons
+from utils.database.get_currencies import get_user_currencies
 from utils.database.add_currency import add_currency_user
 from utils.database.delete_currency import delete_user_currency
+from utils.database.add_history import add_user_history
 from utils.site_API.get_currencies_API import get_currencies_api
 
 
@@ -20,6 +21,8 @@ def get_currencies(message: Message) -> None:
 	:param message: Сообщение
 	:return: None
 	"""
+	add_user_history(message.from_user.id, 'Переход к списку сохраненных валют (/currencies).')
+
 	bot_message = '📋 Ваш список валют:\n\n'
 	bot_end_msg = (
 		'\n💬 Выберите действие, чтобы редактировать список.\n\n'
@@ -57,6 +60,7 @@ def back_main_page(message: Message) -> None:
 	:return: None
 	"""
 	bot.delete_state(message.from_user.id, message.chat.id)
+	add_user_history(message.from_user.id, f'Возврат к списку сохраненных валют по кнопке {message.text}')
 
 	get_currencies(message)
 
@@ -70,6 +74,7 @@ def delete_callback(call: CallbackQuery) -> None:
 	:return: None
 	"""
 	bot.set_state(call.from_user.id, ChangeUserCurrencies.delete, call.message.chat.id)
+	add_user_history(call.from_user.id, 'Выбор валюты к удалению.')
 
 	markup_back = add_back_main_button()
 	bot.send_message(call.message.chat.id, '➡️ Вы в разделе «Удалить».\n\n', reply_markup=markup_back)
@@ -101,9 +106,11 @@ def delete_name_callback(call: CallbackQuery) -> None:
 	:param call: Сообщение
 	:return: None
 	"""
+
 	# Срез до названия валюты
 	name_currency = call.data[9:]
 
+	add_user_history(call.from_user.id, f'Удаление валюты {name_currency} из списка.')
 	# Список валюты у пользователя
 	user_currencies = get_user_currencies(call.from_user.id)
 
@@ -146,6 +153,7 @@ def clear_callback(call: CallbackQuery) -> None:
 	Перед очисткой сохраненного списка валюты подтверждение пользователя.
 	"""
 	bot.set_state(call.from_user.id, ChangeUserCurrencies.clear, call.message.chat.id)
+	add_user_history(call.from_user.id, 'Подтверждение очистки списка валют.')
 
 	markup_back = add_back_main_button()
 	bot.send_message(call.message.chat.id, '➡️ Вы в разделе «Очистить».\n\n', reply_markup=markup_back)
@@ -176,10 +184,13 @@ def clear_confirm_callback(call: CallbackQuery) -> None:
 	confirm = call.data
 
 	if confirm == 'yes':
+		add_user_history(call.from_user.id, 'Очистка списка валют.')
+
 		# Если пользователь подтвердил, то полная очистка его списка
 		delete_user_currency(user_telegram_id=call.from_user.id, clear=True)
 		message = '✅ Список полностью очищен.'
 	else:
+		add_user_history(call.from_user.id, 'Отмена очистки списка валют.')
 		message = 'Список не был очищен.'
 
 	message_end = '\n\nПо кнопке «Вернуться» можно перейти обратно к своему списку валют.'
@@ -200,6 +211,7 @@ def choice_add_callback(call: CallbackQuery) -> None:
 	:return: None
 	"""
 	bot.set_state(call.from_user.id, ChangeUserCurrencies.add, call.message.chat.id)
+	add_user_history(call.from_user.id, 'Выбор добавляемой валюты в список.')
 
 	# Список валюты пользователя
 	user_currencies = get_user_currencies(call.from_user.id)
@@ -254,6 +266,9 @@ def add(message: Message) -> None:
 	:return: None
 	"""
 	name_currency = message.text.upper()
+
+	add_user_history(message.from_user.id, f'Добавление валюты {name_currency} в список.')
+
 	currencies_api_data = get_currencies_api()
 	user_currencies = get_user_currencies(message.from_user.id)
 

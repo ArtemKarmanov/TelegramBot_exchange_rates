@@ -4,6 +4,7 @@ from loader import bot
 
 from keyboards.reply.back_main import edit_currencies_button
 from utils.database.get_currencies import get_user_currencies
+from utils.database.add_history import add_user_history
 from utils.site_API.get_currencies_API import get_value_currency_api
 from utils.site_API.get_date import get_datetime_now_api
 from states.custom_states import CalculationWallet
@@ -18,6 +19,8 @@ def set_wallet(message: Message) -> None:
 	:return: None
 	"""
 	bot.set_state(message.from_user.id, CalculationWallet.calculate, message.chat.id)
+	add_user_history(message.from_user.id, f'Ввод средств для расчёта по курсу (/high).')
+
 	user_currencies = get_user_currencies(message.from_user.id)
 
 	if user_currencies:
@@ -43,6 +46,7 @@ def calculation(message: Message) -> None:
 	with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
 		# Цикличный запрос на ввод суммы, если введены не только цифры
 		if not message.text.isdigit():
+			add_user_history(message.from_user.id, f'Попытка расчёта «{message.text}».')
 			bot.reply_to(
 				message,
 				'❌ В сумме присутствуют буквы либо символы. Необходимо ввести сумму только цифрами.\n'
@@ -51,6 +55,8 @@ def calculation(message: Message) -> None:
 			return
 		# Сохранение введённой суммы пользователем
 		data['amount'] = message.text
+
+	add_user_history(message.from_user.id, f'Расчёт суммы {message.text} руб.')
 
 	bot.send_message(
 		message.chat.id,

@@ -1,4 +1,6 @@
-from peewee import Model, SqliteDatabase, CharField, IntegerField, ForeignKeyField
+import datetime
+
+from peewee import Model, SqliteDatabase, CharField, IntegerField, ForeignKeyField, TextField, DateTimeField
 
 db = SqliteDatabase('database/peewee_db.db')
 
@@ -28,3 +30,12 @@ class Currency(BaseModel):
 	"""
 	owner = ForeignKeyField(User, backref='currencies')
 	name = CharField()
+
+
+class History(BaseModel):
+	"""
+	История запросов пользователя.
+	"""
+	user = ForeignKeyField(User, backref='history')
+	text = TextField()
+	created = DateTimeField(default=datetime.datetime.now())
