@@ -12,5 +12,10 @@ RAPID_API_HOST = os.getenv("RAPID_API_HOST")
 DEFAULT_COMMANDS = (
     ("start", "Запустить бота"),
     ("help", "Вывести справку"),
-    ("low", "Текущий курс")
+    ("low", "Посмотреть текущий курс"),
+    ("high", "Рассчитать свои средства по курсу"),
+    ("custom", "Вывести курс за период"),
+    ("currencies", "Изменить список валют"),
+)
+CUSTOM_COMMANDS = (
 )
