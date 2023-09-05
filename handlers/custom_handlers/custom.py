@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from utils.database.get_currencies import get_user_currencies
 from utils.database.add_history import add_user_history
-from utils.site_API.get_currencies_API import get_period_currencies_api
+from utils.site_API.get_currencies_API import get_period_currencies_api, get_value_currency_api
 from utils.site_API.get_date import transform_date_format
 from keyboards.inline.get_currencies import get_currencies_buttons
 from keyboards.reply.back_main import edit_currencies_button, add_back_main_custom_button, remove_back_main_button
@@ -278,6 +278,8 @@ def period_currency(call: CallbackQuery) -> None:
 	# Список значений по x и y
 	dates_x = []
 	values_y = []
+	# Берем значение рубля
+	value_rub = get_value_currency_api('RUB')
 
 	# Фильтрация по данным от API
 	for date, currencies in period_data.items():
@@ -286,6 +288,7 @@ def period_currency(call: CallbackQuery) -> None:
 		# Добавление курса валюты в список, если имя совпало
 		for currency, value in currencies.items():
 			if currency == name_currency:
+				value = round(float(value_rub) / float(value), 2)
 				values_y.append(value)
 				break
 

@@ -15,7 +15,6 @@ def get_user_history(user_telegram_id, count) -> List:
 	user = User.get(User.telegram_id == user_telegram_id)
 	all_history = History.select().where(History.user == user).order_by(-History.created, -History.id).limit(10)
 	result = list()
-	print(list(all_history))
 
 	for history in all_history:
 		date_history = history.created.strftime('%d.%m.%Y %H:%M')
