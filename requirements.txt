@@ -1,3 +1,6 @@
 pyTelegramBotAPI==4.9.0
 python-dotenv==0.21.1
 peewee==3.16.2
+requests~=2.31.0
+matplotlib==3.7.2
+telebot-calendar==1.2

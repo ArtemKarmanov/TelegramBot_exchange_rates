@@ -1,3 +1,3 @@
-from . import change
-from . import currency
-from . import clear
+from . import change_currencies
+from . import get_currencies
+from . import clear_confirm
