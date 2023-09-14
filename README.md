@@ -48,7 +48,7 @@
 ### Клонирование репозитория
 * Перейдите в папку проекта и выполните команду `git clone`, чтобы скопировать файлы репозитория
 ```
-git clone https://gitlab.skillbox.ru/artem_karmanov/python_basic_diploma.git
+git clone https://github.com/PanicNyan/TelegramBot_exchange_rates.git
 ```
 
 <a name="install-botfather"></a>
